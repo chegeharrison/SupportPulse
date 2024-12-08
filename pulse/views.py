@@ -18,3 +18,6 @@ def pricing(request):
 
 def contact(request):
     return render(request, 'contact.html')
+
+def details(request):
+    return render(request, 'details.html')
