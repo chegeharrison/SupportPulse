@@ -1,7 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ContactForm
 from .models import ContactMessage
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Ticket, Response
+from .forms import TicketForm
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Ticket
+from .forms import CustomerRegistrationForm
+from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import TicketResponseForm
+
 
 # Create your views here.
 def index(request):
@@ -40,3 +54,106 @@ def contact(request):
         form = ContactForm()
     return render(request, "contact.html", {"form": form})
 
+
+
+
+@login_required
+
+def create_ticket(request):
+    if request.method == 'POST':
+        form = TicketForm(request.POST)
+        if form.is_valid():
+            # Save the ticket data
+            ticket = form.save(commit=False)
+            ticket.customer = request.user
+            ticket.save()
+
+            # Show a success message
+            messages.success(request, "Your ticket has been submitted successfully! Thank you for your patience as we work to resolve your issue.")
+
+            # Redirect to the same page to clear the form
+            return redirect('create_ticket')
+        else:
+            messages.error(request, "Please correct the errors in the form.")
+    else:
+        form = TicketForm()
+
+    return render(request, 'create_tickets.html', {'form': form})
+
+# amendments
+def register_customer(request):
+    if request.method == 'POST':
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            # Save the user
+            user = form.save(commit=False)
+            user.role = 'customer'  # Assign the 'customer' role
+            user.set_password(form.cleaned_data['password'])  # Set the password
+            user.save()
+
+            # Automatically log the user in after registration
+            login(request, user)
+
+            # Show a success message
+            messages.success(request, "You have successfully registered! Please log in.")
+
+            # Redirect to login page
+            return redirect('login')  # Redirect to the login page
+
+    else:
+        form = CustomerRegistrationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
+
+
+@login_required
+def staff_dashboard(request):
+    if request.user.role != 'staff':
+        return redirect('login')  # Restrict access to staff only
+    tickets = Ticket.objects.all()
+    return render(request, 'staff_dashboard.html', {'tickets': tickets})
+
+@login_required
+def respond_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+
+    # Ensure only staff members can access this page
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to respond to tickets.")
+        return redirect('staff_dashboard')
+
+    if request.method == 'POST':
+        form = TicketResponseForm(request.POST)
+        if form.is_valid():
+            # Save the response
+            ticket.response = form.cleaned_data['response']
+            ticket.status = 'resolved'  # Change status to resolved
+            ticket.resolved_by = request.user  # Set the staff member who resolved the ticket
+            ticket.save()
+
+            messages.success(request, "Ticket has been resolved successfully!")
+            return redirect('staff_dashboard')  # Redirect back to the dashboard
+    else:
+        form = TicketResponseForm()
+
+    return render(request, 'respond_ticket.html', {'form': form, 'ticket': ticket})
+
+
+def custom_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            # Redirect based on user role
+            if user.role == 'customer':
+                return redirect('create_ticket')  # Redirect customer to ticket creation
+            elif user.role == 'staff':
+                return redirect('staff_dashboard')  # Redirect staff to dashboard
+            else:
+                return redirect('index')  # Default fallback
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})

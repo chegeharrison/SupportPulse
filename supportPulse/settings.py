@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'widget_tweaks',
-    'accounts',
     "pulse",
 ]
 
@@ -56,6 +55,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Other middleware
+    'pulse.middleware.RoleBasedRedirectMiddleware',
 ]
 
 ROOT_URLCONF = "supportPulse.urls"
@@ -136,4 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'index'
+AUTH_USER_MODEL = 'pulse.CustomUser'
 
