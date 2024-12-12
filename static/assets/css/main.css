@@ -1955,4 +1955,7 @@ section,
 .buttn{
   color: #77b6ca
 }
+.main-content {
+  margin-top: 80px; /* Adjust to match the navbar height */
+}
 

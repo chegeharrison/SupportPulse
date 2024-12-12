@@ -33,6 +33,9 @@ def services(request):
 def pricing(request):
     return render(request, 'pricing.html')
 
+def monitoring(request):
+    return render(request, 'monitoring.html')
+
 def details(request):
     return render(request, 'details.html')
 
@@ -127,12 +130,12 @@ def respond_ticket(request, ticket_id):
         if form.is_valid():
             # Save the response
             ticket.response = form.cleaned_data['response']
-            ticket.status = 'resolved'  # Change status to resolved
-            ticket.resolved_by = request.user  # Set the staff member who resolved the ticket
+            ticket.status = 'resolved'  
+            ticket.resolved_by = request.user  
             ticket.save()
 
             messages.success(request, "Ticket has been resolved successfully!")
-            return redirect('staff_dashboard')  # Redirect back to the dashboard
+            return redirect('staff_dashboard')  
     else:
         form = TicketResponseForm()
 
@@ -147,11 +150,11 @@ def custom_login(request):
             login(request, user)
             # Redirect based on user role
             if user.role == 'customer':
-                return redirect('create_ticket')  # Redirect customer to ticket creation
+                return redirect('create_ticket')  
             elif user.role == 'staff':
-                return redirect('staff_dashboard')  # Redirect staff to dashboard
+                return redirect('staff_dashboard')  
             else:
-                return redirect('index')  # Default fallback
+                return redirect('index') 
         else:
             messages.error(request, "Invalid username or password.")
     else:

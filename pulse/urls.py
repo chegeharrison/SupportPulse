@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
 
@@ -11,6 +11,7 @@ urlpatterns = [
     path('pricing/', views.pricing, name='pricing'),
     path('contact/', views.contact, name='contact'),
     path('details/', views.details, name='details'),
+    path('monitoring/', views.monitoring, name='monitoring'),
     path('create_ticket/', views.create_ticket, name='create_ticket'),  # Ticket page for customers
     path('register/', views.register_customer, name='register_customer'),
     path('staff-dashboard/', views.staff_dashboard, name='staff_dashboard'),
@@ -18,5 +19,5 @@ urlpatterns = [
 
     # Login/logout
     path('accounts/login/', views.custom_login, name='login'),  # Change login URL to /accounts/login/
-    path('logout/', LogoutView.as_view(next_page='index'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
 ]

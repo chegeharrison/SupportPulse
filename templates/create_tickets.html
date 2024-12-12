@@ -8,6 +8,7 @@
     {% include 'navbar.html' %}
     <div class="container container-fluid">
         <img src="{% static 'assets/img/background1.webp' %}" class="img-fluid hero-img" alt="" data-aos="zoom-out" data-aos-delay="300">
+        
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <!-- Display messages -->
@@ -17,11 +18,18 @@
                     {% endfor %}
                 {% endif %}
 
+                <!-- Welcome message with logged-in user's name -->
+                {% if user.is_authenticated %}
+                    <div class="text-center mb-4">
+                        <h3>Welcome, {{ user.username }}! How are we helping you today?</h3>
+                    </div>
+                {% endif %}
+
                 <!-- Form -->
                 <form method="post">
                     {% csrf_token %}
                     <fieldset class="form-group">
-                        <legend class="text-center">Submit Your Issue</legend>
+                        <legend class="text-center">Let Us know Your Issue</legend>
                         {{ form|crispy }}
                     </fieldset>
                     <div class="text-center mt-4">
