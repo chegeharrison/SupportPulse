@@ -97,7 +97,34 @@
     <!-- Main JS File -->
     <script src="{% static 'assets/js/main.js' %}"></script>
 <!-- testing -->
-<script src="https://cdn.jsdelivr.net/npm/glightbox@3.0.5/dist/js/glightbox.min.js"></script>
+<script>
+    // Add event listener to populate modal with correct amount
+    document.querySelectorAll('.cta-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const amount = this.getAttribute('data-amount');
+            document.getElementById('amount').value = amount;
+        });
+    });
+
+    // Handle form submission
+    document.getElementById('paymentForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const response = await fetch('/process-payment/', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Payment successful!');
+        } else {
+            alert('Payment failed. Please try again.');
+        }
+    });
+</script>
  <!-- end test -->
     <script>
         // Hide preloader when page is fully loaded

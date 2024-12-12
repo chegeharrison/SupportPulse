@@ -70,3 +70,5 @@ class TicketResponseForm(forms.ModelForm):
     class Meta:
         model = Ticket
         fields = ['response']
+        
+

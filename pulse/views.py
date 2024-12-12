@@ -1,20 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ContactForm
+from .forms import ContactForm,TicketForm,TicketResponseForm,CustomerRegistrationForm,Ticket
 from .models import ContactMessage
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Ticket, Response
-from .forms import TicketForm
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import Ticket
-from .forms import CustomerRegistrationForm
-from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import TicketResponseForm
+import requests
+from decouple import config
+from django.conf import settings
+from datetime import datetime
+import base64
 
 
 # Create your views here.
@@ -160,3 +156,5 @@ def custom_login(request):
     else:
         form = AuthenticationForm()
     return render(request, 'registration/login.html', {'form': form})
+
+
